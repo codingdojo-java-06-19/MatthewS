@@ -135,6 +135,6 @@ public class Basics {
       arr[i] = arr[i + 1];
     }
     arr[arr.length - 1] = 0;
-    System.out.println(arr);
+    System.out.println(Arrays.toString(arr));
   }
 }
