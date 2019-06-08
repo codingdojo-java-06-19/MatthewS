@@ -1,0 +1,27 @@
+.box1 {
+	width: 100px;
+	height: 100px;
+	margin: 0px;
+	background-color: red;
+	display: inline-block;
+}
+
+.box2 {
+	width: 100px;
+	height: 100px;
+	margin: 0px];
+	background-color: black;
+	display: inline-block;
+}
+
+.row {
+	width: 1200px;
+	margin: 0px;
+	padding: 0px;
+}
+
+#wrapper {
+	background-color: wheat;
+	width: 1200px;
+	text-align: center;
+}
