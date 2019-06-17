@@ -11,12 +11,13 @@
 <body>
 <a href="music/new">Add New</a> <a href="/search/topten">Top Songs</a>
 
-<form:form action="/search" method="post" modelAttribute="Music">
+<form:form action="/search" method="post" modelAttribute="music">
         <form:label path="artist">Artist</form:label>
         <form:errors path="artist"/>
         <form:input path="artist"/>
     <input type="submit" value="Submit"/>
 </form:form>    
+
 <table>
     <thead>
         <tr>
@@ -26,11 +27,14 @@
         </tr>
     </thead>
     <tbody>
-        <c:forEach items="${music}" var="music">
+        <c:forEach items="${allmusic}" var="music">
         <tr>
             <td><a href="songs/${music.id}"><c:out value="${music.title}"/></a></td>
             <td><c:out value="${music.rating}"/></td>
-            <td>Delete</td>
+            <td>
+            <form action="/songs/${music.id}" method="post">
+            <input type="hidden" name="_method" value="delete"><input type="submit" value="delete"></form>
+            </td>
         </tr>
         </c:forEach>
     </tbody>

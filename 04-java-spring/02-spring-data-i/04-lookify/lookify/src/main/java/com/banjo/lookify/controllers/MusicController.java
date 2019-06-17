@@ -30,9 +30,9 @@ public class MusicController {
 	}
 	
 	@RequestMapping("/dashboard")
-	public String dashboard(Model model) {
-		List<Music> music = musicService.allMusic();
-		model.addAttribute("music", music);
+	public String dashboard(Model model, @ModelAttribute("music") Music music) {
+		List<Music> songs = musicService.allMusic();
+		model.addAttribute("allmusic", songs);
 		return "music/dashboard.jsp";
 	}
 	
@@ -71,5 +71,11 @@ public class MusicController {
 		model.addAttribute("search", search);
 		model.addAttribute("results", results);
 		return "music/search.jsp";
+	}
+	
+	@RequestMapping(value="/songs/{id}", method=RequestMethod.DELETE)
+	public String delete(@PathVariable("id") Long id) {
+		musicService.deleteSong(id);
+		return "redirect:/dashboard";
 	}
 }
