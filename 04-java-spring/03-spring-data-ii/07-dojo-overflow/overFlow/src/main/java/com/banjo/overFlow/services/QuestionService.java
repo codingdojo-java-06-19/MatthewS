@@ -48,5 +48,4 @@ public class QuestionService {
 		question.addAnswer(answer);
 		createOrUpdate(question);
 	}
-	
 }

@@ -3,17 +3,21 @@ package com.banjo.overFlow.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.banjo.overFlow.models.Answer;
 import com.banjo.overFlow.models.Question;
 import com.banjo.overFlow.models.Tag;
+import com.banjo.overFlow.services.AnswerService;
 import com.banjo.overFlow.services.QuestionService;
 import com.banjo.overFlow.services.TagService;
 
@@ -23,52 +27,61 @@ import com.banjo.overFlow.services.TagService;
 public class QuestionController {
 	private final QuestionService questionService;
 	private final TagService tagService;
+	private final AnswerService answerService;
 	
-	public QuestionController(QuestionService questionService, TagService tagService) {
+	public QuestionController(QuestionService questionService, TagService tagService, AnswerService answerService) {
 		this.questionService = questionService;
 		this.tagService = tagService;
+		this.answerService = answerService;
 	}
 	
 	@RequestMapping("/dashboard")
 	public String dashboard(Model model) {
-		List<Question> allQ = questionService.allQuestions();
-		
+		List<Question> allQ = questionService.allQuestions();		
 		model.addAttribute("allQ", allQ);
 		return "dashboard.jsp";
 	}
 	
 	@RequestMapping("/new")
-	public String newQ(@ModelAttribute("question") Question question) {
+	public String newQ(@ModelAttribute("newQuestion") Question question) {
 		return "newQ.jsp";
 	}
 	
+	
 	@RequestMapping(value="/new", method=RequestMethod.POST)
-	public String addNewQ(@RequestParam("question") String q, @RequestParam("tags") String tags) {
-		Question newQuestion = new Question();
-		Tag newTags = new Tag();
-		newQuestion.setQuestion(q);
-		
+	public String addNewQ(@ModelAttribute("newQuestion") Question q, @RequestParam("subjects") String tags) {		
 		String[] tagArr = tags.split(", ");
-		if (tagArr.length > 3) {
-			return "redirect:/questions/new";
-		}
+		int tagCount = tagArr.length > 3 ? 3 : tagArr.length; 
 		
 		List<Tag> qTags = new ArrayList<>();
-		for (int i = 0; i < tagArr.length; i++) {
-			if(tagService.findBySubject(tagArr[i]) == null) {
-				newTags.setSubject(tagArr[i]);
-				tagService.saveTag(newTags);
-				qTags.add(newTags);				
-			} else {
-				Tag tag2 = new Tag();
-				tag2.setSubject(tagArr[i]);
-				qTags.add(tag2);
-			}
+		for (int i = 0; i < tagCount; i++) {
+			Tag tag = tagService.findOrCreate(tagArr[i]);
+			tagService.addUniqueTag(qTags, tag);
 		}
-		newQuestion.setTags(qTags);
-		questionService.createOrUpdate(newQuestion);
-		return "redirect:/dashboard";
+		
+		q.setTags(qTags);
+		questionService.createOrUpdate(q);
+		return "redirect:/questions/dashboard";
 		
 		
+}
+	
+	@RequestMapping("/{id}")
+	public String getQuestion(@PathVariable("id") Long id, Model model, @ModelAttribute("newAnswer") Answer answer) {
+		Question q = questionService.findQuestion(id);
+		model.addAttribute("q", q);
+		return "showQ.jsp";
 	}
+	
+	@RequestMapping(value="/addanswer/{id}", method=RequestMethod.POST)
+	public String newAnswer(@Valid @ModelAttribute("newAnswer") Answer answer, BindingResult result, @PathVariable("id") Long id) {
+		if (result.hasErrors()) {
+			System.out.println("Error!!!!!");
+			return "redirect:/questions/" + id;
+		}
+		// Save to Answer to DB
+		answerService.saveAnswer(answer);
+		return "redirect:/questions/" + id;
+	}
+	
 }

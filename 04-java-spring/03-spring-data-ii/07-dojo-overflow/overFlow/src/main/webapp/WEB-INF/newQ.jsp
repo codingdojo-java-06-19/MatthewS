@@ -8,19 +8,17 @@
 <title>Ask New Question</title>
 </head>
 <body>
-<form:form action="/questions/new" method="post" modelAttribute="question">
+<form:form action="/questions/new" method="post" modelAttribute="newQuestion">
     <p>
         <form:label path="question">Question</form:label>
         <form:errors path="question"/>
         <form:textarea path="question"/>
     </p>
-    <p>
-        <form:label path="tags">Tags</form:label>
-        <form:errors path="tags"/>
-        <form:input path="tags"/>
+    <p><label>Tags</label>
+		<input type="text" name="subjects">
     </p>
 
     <input type="submit" value="Create"/>
-    </form:form>
+</form:form>
 </body>
 </html>

@@ -26,4 +26,23 @@ public class TagService {
 	public Tag findBySubject(String subject) {
 		return tagRepo.findBySubjectEquals(subject);
 	}
+	
+	public Tag findOrCreate(String subject) {
+		Tag newTag = findBySubject(subject.toLowerCase().trim());
+		if (newTag == null) {
+			newTag = new Tag();
+			newTag.setSubject(subject);
+			saveTag(newTag);
+		}
+		return newTag;
+	}
+	
+	public void addUniqueTag(List<Tag> tags, Tag tagToAdd) {
+		for (Tag tag : tags) {
+			if (tag.getSubject().equals(tagToAdd.getSubject())) {
+				return;
+			} 
+		}
+		tags.add(tagToAdd);
+	}
 }

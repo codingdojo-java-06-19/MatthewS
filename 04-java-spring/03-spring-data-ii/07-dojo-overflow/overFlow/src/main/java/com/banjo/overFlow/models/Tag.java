@@ -55,7 +55,7 @@ public class Tag {
 		return subject;
 	}
 	public void setSubject(String subject) {
-		this.subject = subject;
+		this.subject = subject.toLowerCase().trim();
 	}
 	public Date getCreatedAt() {
 		return createdAt;
